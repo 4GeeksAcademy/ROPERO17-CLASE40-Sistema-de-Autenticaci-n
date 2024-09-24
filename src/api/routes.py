@@ -93,6 +93,34 @@ def delete_favorite_character(people_id):
         db.session.commit()
         return jsonify({"msg": "Character removed from favorites"}), 200
     return jsonify({"msg": "Character not found in favorites"}), 404
+@api.route("/login", methods=["POST"])
+def login():
+    username = request.json.get("username")
+    password = request.json.get("password")
+    if not username or not password:
+        return jsonify({"msg": "Usuario o contraseña faltante"}), 400
+    user = User.query.filter_by(username=username).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({"msg": "Usuario o contraseña incorrectos"}), 401
+    access_token = create_access_token(identity=user.id)
+    return jsonify(access_token=access_token), 200
+
+
+@api.route("/logout", methods=["POST"])
+def logout():
+    response = make_response(jsonify({"msg": "Logout exitoso"}))
+    response.delete_cookie('access_token_cookie')
+    return response
+
+@api.route('/signup', methods=['POST'])
+def create_user():
+    data = request.json
+    hashed_password = generate_password_hash(data['password'])
+    new_user = User(username=data['username'], email=data['email'], password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"user": new_user.serialize()}), 200
+
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
