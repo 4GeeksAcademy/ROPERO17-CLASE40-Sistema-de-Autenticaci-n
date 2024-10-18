@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 import { Context } from "../store/appContext";
 import "../../styles/home.css";
-import { Login } from "./login";
+import Login  from "./login";
 
 export const Home = () => {
     const { store, actions } = useContext(Context);

@@ -2,74 +2,78 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-export const Login = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(""); // State to manage error messages
+const Login = () => {
+    const [user, setUser] = useState({ username: "", password: "" });
+    const [loginError, setLoginError] = useState(null);
     const { actions } = useContext(Context);
-    const navigate = useNavigate();
+    const navigate = useNavigate();  // Hook para redirigir
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError(""); // Reset error message before attempting login
-    
-        console.log("Attempting login with", { username, password });
-    
-        try {
-            const logged = await actions.login(username, password);
-            console.log("Login result:", logged);
-            
-            if (logged) {
-                navigate("/");
-            } else {
-                setError("Username or password is incorrect."); // Set error message if login fails
-            }
-        } catch (error) {
-            console.error("Error during login:", error);
-            setError("An error occurred during login. Please try again.");
+    const onChange = (event) => {
+        setUser({
+            ...user,
+            [event.target.name]: event.target.value
+        });
+    };
+
+    const loginUser = async (event) => {
+        event.preventDefault();
+        setLoginError(null); // Clear previous error
+
+        const loginSuccess = await actions.login(user.username, user.password);
+
+        if (loginSuccess) {
+            navigate("/pages/menu");  // Redirigir al menú si el login es exitoso
+        } else {
+            setLoginError("Invalid username or password"); // Set error message
         }
-        
-        setUsername("");
-        setPassword("");
     };
 
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-100">
-            <div className="card p-4" style={{ maxWidth: '500px', width: '100%' }}>
-                <div className="card-body">
-                    <h2 className="m-auto text-center display-4 mb-4">Login</h2>
-                    {error && <div className="alert alert-danger">{error}</div>} {/* Display error message */}
-                    <form onSubmit={handleLogin}>
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputEmail1" className="form-label">Username</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="exampleInputEmail1"
-                                aria-describedby="emailHelp"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                id="exampleInputPassword1"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-primary w-100">Submit</button>
-                        <div className="mt-3 text-center">
-                            <a href="/password-reset-request" className="btn btn-link">Forgot Password?</a>
-                        </div>
-                    </form>
-                </div>
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+            <div className="login-card card p-4" style={{ maxWidth: "400px", width: "100%" }}>
+                <h2 className="text-center mb-4">Sign In</h2>
+                
+                {loginError && <div className="alert alert-danger">{loginError}</div>} {/* Error display */}
+                
+                <form onSubmit={loginUser}>
+                    <div className="form-group mb-3">
+                        <label htmlFor="usernameInput">Username</label>
+                        <input
+                            type="text"
+                            id="usernameInput"
+                            name="username"
+                            className="form-control"
+                            value={user.username}
+                            onChange={onChange}
+                            required
+                        />
+                    </div>
+                    
+                    <div className="form-group mb-3">
+                        <label htmlFor="passwordInput">Password</label>
+                        <input
+                            type="password"
+                            id="passwordInput"
+                            name="password"
+                            className="form-control"
+                            value={user.password}
+                            onChange={onChange}
+                            required
+                        />
+                    </div>
+                    
+                    <button type="submit" className="btn btn-primary w-100">Login</button>
+                    
+                    <div className="text-center mt-3">
+                        <a href="/password-reset-request" className="text-muted">Forgot your password?</a>
+                    </div>
+                    <div className="text-center mt-3">
+                        <a href="/pages/create" className="text-muted">You don’t have an account?</a>
+                    </div>
+                </form>
             </div>
         </div>
     );
 };
+
+export default Login;
