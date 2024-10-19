@@ -112,15 +112,13 @@ def logout():
     response.delete_cookie('access_token_cookie')
     return response
 
-@api.route('/signup', methods=['POST'])
+@api.route('/create', methods=['POST'])
 def create_user():
-    data = request.json
-    hashed_password = generate_password_hash(data['password'])
-    new_user = User(username=data['username'], email=data['email'], password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"user": new_user.serialize()}), 200
-
+    response = make_response("User created", 201)
+    response.headers['Access-Control-Allow-Origin'] = 'https://scaling-eureka-4j75xj56xrq627jq5-3000.app.github.dev'
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
