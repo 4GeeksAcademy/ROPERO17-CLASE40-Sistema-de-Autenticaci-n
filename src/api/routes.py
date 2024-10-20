@@ -9,8 +9,9 @@ from .models import db, User, Planet, Character
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
 CORS(api)
+
+
 
 @api.route('/people', methods=['GET'])
 def get_people():
@@ -115,7 +116,7 @@ def logout():
 @api.route('/create', methods=['POST'])
 def create_user():
     response = make_response("User created", 201)
-    response.headers['Access-Control-Allow-Origin'] = 'https://scaling-eureka-4j75xj56xrq627jq5-3000.app.github.dev'
+    response.headers['Access-Control-Allow-Origin'] = 'https://scaling-eureka-4j75xj56xrq627jq5-3001.app.github.dev'
     response.headers['Access-Control-Allow-Methods'] = 'POST'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
